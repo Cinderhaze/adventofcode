@@ -10,11 +10,16 @@ class Day1
   end
  
   def path()
+    count = 1
     @input.each_char { |c|
       case c
        when '(' then @floor +=1
        when ')' then @floor -=1
       end
+      if @floor == -1
+        @in_basement << count
+      end
+      count += 1
     }
     @floor
   end
@@ -26,6 +31,9 @@ if __FILE__ == $0
   input_name = 'day1.input.txt'
   input = IO.read(input_name)
 
-  puts Day1.new(input)
+  ans = Day1.new(input)
+  ans.path()
+  puts "Floor #{ans.floor}"
+  puts "First entrance to basement #{ans.in_basement.first}"
 
 end
