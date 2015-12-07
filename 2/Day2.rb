@@ -2,8 +2,32 @@
 
 require 'getoptlong'
 
+class Side
+  attr_reader :area, :perimeter
+
+  def initialize(edge1, edge2)
+    @edges = [ edge1.to_i, edge2.to_i ]
+    calcPerimeter(edge1, edge2)
+    calcArea(edge1, edge2)
+  end
+
+  def calcPerimeter(edge1, edge2)
+    @perimeter = 2 * edge1.to_i + 2 * edge2.to_i
+  end
+
+  def calcArea(edge1, edge2)
+    @area = edge1.to_i * edge2.to_i 
+  end
+
+  def to_s
+    puts "Edges: #{@edges}, Area: #{@area}, Perimeter: #{@perimeter}"
+  end
+
+end
+
 class Box
   attr_reader :area, :extra, :total, :edges, :sides
+  
 
   def initialize(input)
     @area = 0
@@ -20,14 +44,22 @@ class Box
 
   def calcArea()
     #populate half the sides
-    @sides << @edges[:l] * @edges[:w]
-    @sides << @edges[:w] * @edges[:h]
-    @sides << @edges[:h] * @edges[:l]
+    @sides << Side.new(@edges[:l], @edges[:w])
+    @sides << Side.new(@edges[:w], @edges[:h])
+    @sides << Side.new(@edges[:h], @edges[:l])
+
+    puts @sides
+
+    # There's got to be a smarter way I could tell 'sort' to use side.area (pass it a block?)
+    side_area = []
+    @sides.each do |side|
+      side_area << side.area
+    end
     
-    @extra = @sides.sort.first
+    @extra = side_area.sort.first
 
     @sides.each do |side|
-        @area += 2 * side
+        @area += 2 * side.area.to_i
     end
 
     @total = @area + @extra
@@ -58,7 +90,6 @@ class Day2
     @input.each_line do |line|
       puts "--#{line.chomp}--"
       box = Box.new(line.chomp)
-#      puts box.to_s
       box.calcArea()
       puts "Box area: #{box.area}"
       puts "Box extra area: #{box.extra}"
@@ -74,19 +105,6 @@ class Day2
     puts "Total Required extra wrapping paper: #{extra} sq ft"
   end
  
-#  def path()
-#    @input.each_char { |c|
-#      case c
-#       when '(' then @floor +=1
-#       when ')' then @floor -=1
-#      end
-#      if @floor == -1
-#        @in_basement << count
-#      end
-#      count += 1
-#    }
-#    @floor
-#  end
 end
 
 #Actually execute things here.. figure out the best way to do this
