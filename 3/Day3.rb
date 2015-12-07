@@ -2,6 +2,46 @@
 
 require 'getoptlong'
 
+class Santa
+  attr_reader :name, :visited
+  
+  def initialize(name)
+    @name = name
+    @visited = Hash.new(0)
+
+    @x = 0
+    @y = 0
+
+    #visit the initial house
+    loc = "(#{@x},#{@y})"
+    @visited[loc] += 1
+
+  end
+
+  def step(input)
+
+    #follow directions
+    case input
+     when '^'
+       @y+=1
+     when 'v'
+       @y-=1
+     when '<'
+       @x-=1
+     when '>'
+       @x+=1
+     end
+     loc = "(#{@x},#{@y})"
+     @visited[loc] += 1
+  end
+
+  def to_s
+    puts "#{name} Visited: #{@visited}"
+    puts "Number of houses visited by #{name}: #{@visited.keys.size}"
+
+  end
+end
+
 class Day3
   attr_reader :input, :visited
   
@@ -11,31 +51,28 @@ class Day3
   end
 
   def calc()
-    x = 0
-    y = 0
 
-    #visit the initial house
-    loc = "(#{x},#{y})"
-    @visited[loc] += 1
+    santa = Santa.new('santa')
+    robo = Santa.new('robo-santa')
+
+    santas = [ santa, robo ]
+    count = 0
 
     #follow directions
     @input.each_char do |c|
-      case c
-      when '^'
-        y+=1
-      when 'v'
-        y-=1
-      when '<'
-        x-=1
-      when '>'
-        x+=1
-      end
-      loc = "(#{x},#{y})"
-      @visited[loc] += 1
+      santas[count%2].step(c)
+      count += 1
     end
 
-    puts "Visited: #{@visited}"
-    puts "Number of houses visited: #{@visited.keys.size}"
+    puts "#{santa.name} Visited: #{santa.visited}"
+    puts "#{robo.name} Visited: #{robo.visited}"
+
+    puts "#{santa.name} visited houses: #{santa.visited.keys.size}"
+    puts "#{robo.name} visited houses: #{robo.visited.keys.size}"
+
+    both = santa.visited.merge(robo.visited) 
+   
+    puts "visited houses: #{both.keys.size}"
 
   end
  
