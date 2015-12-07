@@ -26,7 +26,7 @@ class Side
 end
 
 class Box
-  attr_reader :area, :extra, :total, :edges, :sides
+  attr_reader :area, :extra, :total, :edges, :sides, :ribbon, :bow
   
 
   def initialize(input)
@@ -35,6 +35,8 @@ class Box
     @total = 0
     @edges = {} 
     @sides = []
+    @ribbon = 0
+    @bow = 0
 
     temp = input.split('x')
     @edges[:l] = temp.shift.to_i
@@ -50,13 +52,7 @@ class Box
 
     puts @sides
 
-    # There's got to be a smarter way I could tell 'sort' to use side.area (pass it a block?)
-    side_area = []
-    @sides.each do |side|
-      side_area << side.area
-    end
-    
-    @extra = side_area.sort.first
+    @extra = @sides.sort{|l,r| l.area <=> r.area}.first.area
 
     @sides.each do |side|
         @area += 2 * side.area.to_i
