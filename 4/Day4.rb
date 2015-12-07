@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'getoptlong'
+require 'digest'
 
 class Day4
   attr_reader :input
@@ -10,9 +11,20 @@ class Day4
   end
 
   def calc()
-    puts input
+    answer = 0
 
+    digest = ''
 
+    until digest.start_with?('00000')
+      
+      answer += 1
+      digest = Digest::MD5.hexdigest(input.to_s + answer.to_s )
+
+    end
+
+    puts "secret key: #{input}"
+    puts "answer: #{answer}"
+    puts "digest: #{digest}"
   end
  
 end
