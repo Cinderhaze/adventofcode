@@ -15,7 +15,7 @@ class Day4
 
     digest = ''
 
-    until digest.start_with?('00000')
+    until digest.start_with?('000000')
       
       answer += 1
       digest = Digest::MD5.hexdigest(input.to_s + answer.to_s )
