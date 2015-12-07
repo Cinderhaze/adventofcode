@@ -3,7 +3,33 @@
 require 'getoptlong'
 
 def nice?(input)
+  # any three vowels
+  three_vowels =/(.*[aeiou].*){3,}/
+  repeated_letter = /(.)\1/
+  bad_groups = /(ab|cd|pq|xy)/
+
+  pass = true
+  
+#  puts "Testing: #{input}"
+  if three_vowels =~ input
+  else
+#    puts 'FAIL three vowels'
+    pass &= false
+  end
+  if repeated_letter =~ input
+  else
+#    puts 'FAIL repeated letter'
+    pass &= false
+  end
+  if bad_groups =~ input
+#    puts 'FAIL no bad groups'
+    pass &= false
+  end
+  
+  !!pass
+  
 end
+
 
 class Day5
   attr_reader :input
@@ -22,6 +48,7 @@ class Day5
     end
 
     puts "#{count} nice strings out of #{total}"
+    count
 
   end
  
