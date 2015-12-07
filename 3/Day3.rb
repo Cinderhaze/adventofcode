@@ -3,16 +3,39 @@
 require 'getoptlong'
 
 class Day3
-  attr_reader :input
+  attr_reader :input, :visited
   
   def initialize(input)
     @input = input
+    @visited = Hash.new(0)
   end
 
   def calc()
-    @input.each_line do |line|
-      puts "--#{line.chomp}--"
+    x = 0
+    y = 0
+
+    #visit the initial house
+    loc = "(#{x},#{y})"
+    @visited[loc] += 1
+
+    #follow directions
+    @input.each_char do |c|
+      case c
+      when '^'
+        y+=1
+      when 'v'
+        y-=1
+      when '<'
+        x-=1
+      when '>'
+        x+=1
+      end
+      loc = "(#{x},#{y})"
+      @visited[loc] += 1
     end
+
+    puts "Visited: #{@visited}"
+    puts "Number of houses visited: #{@visited.keys.size}"
 
   end
  
