@@ -26,7 +26,7 @@ class Side
 end
 
 class Box
-  attr_reader :area, :extra, :total, :edges, :sides, :ribbon, :bow
+  attr_reader :area, :extra, :total, :edges, :sides, :ribbon, :bow, :volume
   
 
   def initialize(input)
@@ -59,8 +59,16 @@ class Box
     end
 
     @total = @area + @extra
+ 
+    smallest_side_perim =@sides.sort{|l,r| l.perimeter <=> r.perimeter}.first.perimeter 
+    @ribbon = smallest_side_perim
     
     @area
+  end
+
+  def calcVolume()
+    @volume = @edges.values.reduce(:*) 
+    @volume
   end
 
   def to_s 
@@ -68,6 +76,7 @@ class Box
       puts "Box area: #{@area}"
       puts "Box extra area: #{@extra}"
       puts "Box total area: #{@total}"
+
   end
 
 end
@@ -83,22 +92,35 @@ class Day2
   def calc()
     total = 0
     extra = 0
+    wrapping = 0
+    bow = 0
     @input.each_line do |line|
       puts "--#{line.chomp}--"
       box = Box.new(line.chomp)
       box.calcArea()
+      box.calcVolume()
       puts "Box area: #{box.area}"
       puts "Box extra area: #{box.extra}"
       puts "Box total area: #{box.total}"
 
       extra += box.extra
       total += box.total
+
+      puts "Box volume area: #{box.volume}"
+      puts "Box ribbon length: #{box.ribbon}"
+
+      wrapping += box.ribbon 
+      bow += box.volume 
       
     end
 
     puts
     puts "Total Required wrapping paper: #{total} sq ft"
     puts "Total Required extra wrapping paper: #{extra} sq ft"
+
+    puts "Wrapping ribbon: #{wrapping}"
+    puts "Bow ribbon: #{bow}"
+    puts "Total ribbon: #{wrapping + bow}"
   end
  
 end
