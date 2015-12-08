@@ -17,7 +17,7 @@ end
 
 class Light
   def initialize()
-    @light=false
+    @light=0
   end
 
   def on?()
@@ -25,15 +25,15 @@ class Light
   end
 
   def on()
-    @light = true
+    @light += 1
   end
 
   def off()
-    @light = false
+    @light = [@light-1, 0].max
   end
 
   def toggle()
-    @light = !@light
+    @light += 2
   end
 end
 
@@ -85,7 +85,10 @@ class Grid
   def num_on()
     #this will count the number of entries similar to .count { |l| l.on? }
     # more concise than better than my .select{ |l| l.on? }.size, thanks Jeg2!
-    @grid.values.count(&:on?) 
+    #@grid.values.count(&:on?) 
+    sum = 0
+    @grid.values.each {|light| sum += light.on?}
+    sum
   end
 end
 
