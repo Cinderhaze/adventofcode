@@ -1,12 +1,49 @@
-m t#!/usr/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'getoptlong'
+
+class Light
+  def initialize()
+    @light=false
+  end
+
+  def on?()
+    return @light
+  end
+
+  def on()
+    @light = true
+  end
+
+  def off()
+    @light = false
+  end
+
+  def toggle()
+    @light = !@light
+  end
+end
+
+class Inst
+  attr_reader :cmd, :begin, :end
+
+  def initialize(inst)
+    parseInst(inst)
+  end
+
+  def parseInst(inst)
+    #use a regex to create three matchgrups
+    /(?<cmd>.*)\s(?<start>\d*,\d*) through (?<stop>\d*,\d*)/ =~ inst
+    @cmd=cmd
+    @begin=start
+    @end=stop
+  end
+end
 
 class Grid
   attr_reader :input
   
-  def initialize(input)
-    @input = input
+  def initialize()
   end
 
   def step(instruction)
@@ -31,7 +68,6 @@ class Day6
     end
 
     puts "#{grid.on} lights are lit"
-    count
 
   end
  
