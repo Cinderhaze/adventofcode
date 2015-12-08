@@ -30,6 +30,25 @@ def nice?(input)
   
 end
 
+def nice_now?(input)
+  two_letter_repeat = /(.)(.).*\1\2/
+  letter_sandwich = /(.).\1/
+
+  pass=true
+
+  if two_letter_repeat =~ input
+  else
+    puts 'FAIL two letter repeat'
+    pass &= false
+  end
+
+  if letter_sandwich =~ input
+  else
+    puts 'FAIL letter sandwich'
+    pass &= false
+  end
+  !! pass
+end
 
 class Day5
   attr_reader :input
@@ -43,7 +62,8 @@ class Day5
     count = 0;
     total = 0;
     @input.each_line do |line|
-      count +=1 if nice?(line)
+#      count +=1 if nice?(line)
+      count +=1 if nice_now?(line)
       total +=1
     end
 
