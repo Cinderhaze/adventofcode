@@ -69,6 +69,10 @@ class Graph
     @results.values.min
   end
 
+  def longest_route
+    @results.values.max
+  end
+
 end
 
 class Day9
@@ -88,6 +92,7 @@ class Day9
     graph.calc()
 
     puts "shortest path is #{graph.shortest_route}"
+    puts "longest path is #{graph.longest_route}"
 
   end
  
