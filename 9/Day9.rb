@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'getoptlong'
+require 'set'
 
 class Inst
   attr_reader :first, :second, :dist
@@ -16,45 +17,58 @@ class Inst
     @second=second
     @dist=dist.to_i
   end
+  
+  def loc_array()
+    [@first, '->',@second]
+  end
 end
 
 class Graph
   attr_reader :input
   
   def initialize()
-    @grid = Hash.new { |h,k| h[k] = Light.new() }
+    @lookup = Hash.new 
+    @locs = Set.new
+    @results = Hash.new
   end
 
   def step(instruction)
     inst = Inst.new(instruction)
+    #insert the 'distance' with both digraphs
+    @lookup[inst.loc_array.join] = inst.dist
+    @lookup[inst.loc_array.reverse.join] = inst.dist
 
-    #for now, just have it operate on the first location given, we'll properly fix this later
+    #Keep track of each location
+    @locs << inst.first
+    @locs << inst.second
+    
+  end
 
-    (inst.begin.x..inst.end.x).each do |x|
-      (inst.begin.y..inst.end.y).each do |y|
-#        puts "Operate on #{x},#{y}"
-        loc = "#{x},#{y}"
-        case inst.cmd
-        when 'toggle'
-          @grid[loc].toggle
-        when 'turn off'
-          @grid[loc].off
-        when 'turn on'
-          @grid[loc].on
+  def calc()
+    # Actually calculate all possible paths, to find the shortest one
+#    puts @lookup
+    @locs.to_a.permutation.each do |path|
+      dist=0
+      path.each_cons(2) do |a,b|
+        #lookup the distance
+#        puts "looking up #{a}->#{b}"
+        step_dist = @lookup["#{a}->#{b}"]
+        if step_dist
+          dist += @lookup["#{a}->#{b}"]
+        else
+          puts "No path from #{a}->#{b}"
+          break
         end
       end
+      @results[path.join("->")]=dist
     end
-   # puts @grid
+#    puts @results
   end
 
-  def num_on()
-    #this will count the number of entries similar to .count { |l| l.on? }
-    # more concise than better than my .select{ |l| l.on? }.size, thanks Jeg2!
-    #@grid.values.count(&:on?) 
-    sum = 0
-    @grid.values.each {|light| sum += light.on?}
-    sum
+  def shortest_route
+    @results.values.min
   end
+
 end
 
 class Day9
@@ -66,12 +80,14 @@ class Day9
 
   def calc()
 
-    grid = Grid.new()
+    graph = Graph.new()
     @input.each_line do |line|
-      grid.step(line)
+      graph.step(line)
     end
 
-    puts "#{grid.num_on} lights are lit"
+    graph.calc()
+
+    puts "shortest path is #{graph.shortest_route}"
 
   end
  
