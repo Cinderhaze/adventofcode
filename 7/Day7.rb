@@ -13,12 +13,19 @@ class Inst
   def parseInst(inst)
     #use a regex to create three matchgrups
     case inst
-    when /(?<cmd>.*)\s(?<start>\d*,\d*) through (?<stop>\d*,\d*)/ =~ inst
     when /(.*) (OR|AND|[L|R]SHIFT) (.*) -> (.*)/
       @operands << $1
       @operands << $3
       @cmd = $2
       @result = $4
+    when /NOT (.*) -> (.*)/
+      @operands << $1
+      @cmd = 'NOT'
+      @result = $2
+    when /(\d*) -> (.*)/
+      @operands << $1
+      @cmd = 'SIG'
+      @result = $2
     end
   end
 end
