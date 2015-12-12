@@ -3,7 +3,7 @@
 require 'getoptlong'
 
 class Inst
-  attr_reader :cmd, :result, :operands, :solved
+  attr_reader :cmd, :result, :operands, :shift
 
   def initialize(inst)
     @operands= Array.new
@@ -14,9 +14,14 @@ class Inst
   def parseInst(inst)
     #use a regex to create three matchgrups
     case inst
-    when /(.*) (OR|AND|[L|R]SHIFT) (.*) -> (.*)/
+    when /(.*) (OR|AND) (.*) -> (.*)/
       @operands << $1
       @operands << $3
+      @cmd = $2
+      @result = $4
+    when /(.*) ([L|R]SHIFT) (.*) -> (.*)/
+      @operands << $1
+      @shift = $3.to_i
       @cmd = $2
       @result = $4
     when /NOT (.*) -> (.*)/
@@ -27,7 +32,6 @@ class Inst
       @operands << $1
       @cmd = 'SIG'
       @result = $2
-      @solved = true
     end
   end
   def solve()
@@ -49,28 +53,66 @@ class Circuit
 
   #assume that you can just solve each instruction as you get it, and you don't need to build a graph and iterativly sovlve it
   def step(instruction)
-    inst = Inst.new(instruction)
+    if instruction.class == String
+      inst = Inst.new(instruction)
+    elsif instruction.class == Inst
+      inst = instruction
+    else
+      puts " WHOOP WHOOP WHOOP I don't know how to handle #{instruction.class}"
+    end
     case inst.cmd
       when 'SIG'
         @results[inst.result] = inst.operands[0].to_i
       when 'OR'
-        puts "#{inst.result} -> #{@results[inst.operands[0]]} | #{@results[inst.operands[1]]}"
-        @results[inst.result]= @results[inst.operands[0]] | @results[inst.operands[1]]
+        if @results.key? inst.operands[0] and @results.key? inst.operands[1]
+          puts "#{inst.result} -> #{@results[inst.operands[0]]} | #{@results[inst.operands[1]]}"
+          @results[inst.result]= @results[inst.operands[0]] | @results[inst.operands[1]]
+        else
+          puts 'storing this for later'
+          @steps[inst.result]=inst
+        end
       when 'AND'
-        puts "#{inst.result} -> #{@results[inst.operands[0]]} & #{@results[inst.operands[1]]}"
-        @results[inst.result]= @results[inst.operands[0]] & @results[inst.operands[1]]
+        if @results.key? inst.operands[0] and @results.key? inst.operands[1]
+          puts "#{inst.result} -> #{@results[inst.operands[0]]} & #{@results[inst.operands[1]]}"
+          @results[inst.result]= @results[inst.operands[0]] & @results[inst.operands[1]]
+        else
+          puts 'storing this for later'
+          @steps[inst.result]=inst
+        end
       when 'LSHIFT'
-        puts "#{inst.result} -> #{@results[inst.operands[0]]} << #{inst.operands[1]}"
-        @results[inst.result]= @results[inst.operands[0]] << inst.operands[1].to_i
+        if @results.key? inst.operands[0]
+          puts "#{inst.result} -> #{@results[inst.operands[0]]} << #{inst.shift}"
+          @results[inst.result]= @results[inst.operands[0]] << inst.shift
+        else
+          puts 'storing this for later'
+          @steps[inst.result]=inst
+        end
       when 'RSHIFT'
-        puts "#{inst.result} -> #{@results[inst.operands[0]]} >> #{inst.operands[1]}"
-        @results[inst.result]= @results[inst.operands[0]] >> inst.operands[1].to_i
+        if @results.key? inst.operands[0]
+          puts "#{inst.result} -> #{@results[inst.operands[0]]} >> #{inst.shift}"
+          @results[inst.result]= @results[inst.operands[0]] >> inst.shift
+        else
+          puts 'storing this for later'
+          @steps[inst.result]=inst
+        end
       when 'NOT'
-        puts "#{inst.result} -> 65535 - #{@results[inst.operands[0]]}"
-        @results[inst.result]= 65535 - @results[inst.operands[0]].to_i
+        if @results.key? inst.operands[0]
+          puts "#{inst.result} -> 65535 - #{@results[inst.operands[0]]}"
+          @results[inst.result]= 65535 - @results[inst.operands[0]].to_i
+        else
+          puts 'storing this for later'
+          @steps[inst.result]=inst
+        end
     end
 
-    puts @results
+  end
+
+  def calc()
+    until @steps.empty?
+      #if all arrays are valid keys in @results, process it
+      #else, come back to it once you reach the end of the list
+      @steps.first
+    end
   end
 
 end
@@ -88,8 +130,6 @@ class Day7
     @input.each_line do |line|
       circuit.step(line)
     end
-
-    circuit.calc()
 
     puts circuit.results
 

@@ -23,13 +23,15 @@ describe Inst do
     inst = Inst.new('p LSHIFT 2 -> q')
     expect(inst.result).to eq('q')
     expect(inst.cmd).to eq('LSHIFT')
-    expect(inst.operands).to eq(['p','2'])
+    expect(inst.operands).to eq(['p'])
+    expect(inst.shift).to eq(2)
   end
   it "means that the value from wire p is right-shifted by 2 and then provided to wire q" do
     inst = Inst.new('p RSHIFT 2 -> q')
     expect(inst.result).to eq('q')
     expect(inst.cmd).to eq('RSHIFT')
-    expect(inst.operands).to eq(['p','2'])
+    expect(inst.operands).to eq(['p'])
+    expect(inst.shift).to eq(2)
   end
   it "means that the bitwise complement of the value from wire e is provided to wire f" do
     inst = Inst.new('NOT e -> f')
@@ -63,5 +65,36 @@ describe Circuit do
     circuit.step('456 -> y')
     circuit.step('x AND y -> z')
     expect(circuit.results['z']).to eq(72)
+  end
+  it "should take a a SIG and a NOT instruction, and solve" do
+    circuit = Circuit.new()
+    circuit.step('123 -> x')
+    circuit.step('NOT x -> y')
+    expect(circuit.results['y']).to eq(65412)
+  end
+  it "should take a a SIG and a NOT instruction, out of order, and solve" do
+    circuit = Circuit.new()
+    circuit.step('NOT x -> y')
+    circuit.step('123 -> x')
+    expect(circuit.results['y']).to eq(65412)
+  end
+  it "should take the problem example, and solve" do
+    circuit = Circuit.new()
+    circuit.step('123 -> x')
+    circuit.step('456 -> y')
+    circuit.step('x AND y -> d')
+    circuit.step('x OR y -> e')
+    circuit.step('x LSHIFT 2 -> f')
+    circuit.step('y RSHIFT 2 -> g')
+    circuit.step('NOT x -> h')
+    circuit.step('NOT y -> i')
+    expect(circuit.results['d']).to eq(72)
+    expect(circuit.results['e']).to eq(507)
+    expect(circuit.results['f']).to eq(492)
+    expect(circuit.results['g']).to eq(114)
+    expect(circuit.results['h']).to eq(65412)
+    expect(circuit.results['i']).to eq(65079)
+    expect(circuit.results['x']).to eq(123)
+    expect(circuit.results['y']).to eq(456)
   end
 end
