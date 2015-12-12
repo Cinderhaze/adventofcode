@@ -40,8 +40,28 @@ describe Inst do
 end
 
 describe Circuit do
-#  it "should initialize to having no lights lit" do
-#    grid = Grid.new()
-#    expect(grid.num_on()).to equal(0)
-#  end
+  it "should take a single SIG instruction" do
+    circuit = Circuit.new()
+    circuit.step('123 -> x')
+    expect(circuit.results['x']).to eq(123)
+  end
+  it "should take a SIG and a RSHIFT instruction, and solve" do
+    circuit = Circuit.new()
+    circuit.step('123 -> x')
+    circuit.step('x RSHIFT 2 -> y')
+    expect(circuit.results['y']).to eq(30)
+  end
+  it "should take a SIG and a LSHIFT instruction, and solve" do
+    circuit = Circuit.new()
+    circuit.step('123 -> x')
+    circuit.step('x LSHIFT 2 -> y')
+    expect(circuit.results['y']).to eq(492)
+  end
+  it "should take a two SIG and a AND instruction, and solve" do
+    circuit = Circuit.new()
+    circuit.step('123 -> x')
+    circuit.step('456 -> y')
+    circuit.step('x AND y -> z')
+    expect(circuit.results['z']).to eq(72)
+  end
 end

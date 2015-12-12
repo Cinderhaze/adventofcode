@@ -3,10 +3,11 @@
 require 'getoptlong'
 
 class Inst
-  attr_reader :cmd, :result, :operands
+  attr_reader :cmd, :result, :operands, :solved
 
   def initialize(inst)
     @operands= Array.new
+    @solved = false
     parseInst(inst)
   end
 
@@ -26,7 +27,14 @@ class Inst
       @operands << $1
       @cmd = 'SIG'
       @result = $2
+      @solved = true
     end
+  end
+  def solve()
+    
+  end
+  def solved?()
+    @solved
   end
 end
 
@@ -35,16 +43,34 @@ class Circuit
   
   def initialize()
     @results = Hash.new
-    @steps = Array.new
+    @steps = Hash.new
     
   end
 
+  #assume that you can just solve each instruction as you get it, and you don't need to build a graph and iterativly sovlve it
   def step(instruction)
-    steps << Inst.new(instruction)
-  end
+    inst = Inst.new(instruction)
+    case inst.cmd
+      when 'SIG'
+        @results[inst.result] = inst.operands[0].to_i
+      when 'OR'
+        puts "#{inst.result} -> #{@results[inst.operands[0]]} | #{@results[inst.operands[1]]}"
+        @results[inst.result]= @results[inst.operands[0]] | @results[inst.operands[1]]
+      when 'AND'
+        puts "#{inst.result} -> #{@results[inst.operands[0]]} & #{@results[inst.operands[1]]}"
+        @results[inst.result]= @results[inst.operands[0]] & @results[inst.operands[1]]
+      when 'LSHIFT'
+        puts "#{inst.result} -> #{@results[inst.operands[0]]} << #{inst.operands[1]}"
+        @results[inst.result]= @results[inst.operands[0]] << inst.operands[1].to_i
+      when 'RSHIFT'
+        puts "#{inst.result} -> #{@results[inst.operands[0]]} >> #{inst.operands[1]}"
+        @results[inst.result]= @results[inst.operands[0]] >> inst.operands[1].to_i
+      when 'NOT'
+        puts "#{inst.result} -> 65535 - #{@results[inst.operands[0]]}"
+        @results[inst.result]= 65535 - @results[inst.operands[0]].to_i
+    end
 
-  def calc()
-    #Take each 'result' value from the instructions and iterativly/recursivly look up their values
+    puts @results
   end
 
 end
