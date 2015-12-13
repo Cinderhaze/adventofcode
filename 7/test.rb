@@ -1,6 +1,12 @@
 load 'Day7.rb'
 
 describe Inst do
+  it "unhappy a signal" do
+    inst = Inst.new('lx -> a')
+    expect(inst.result).to eq('a')
+    expect(inst.cmd).to eq('SIG')
+    expect(inst.operands).to eq(['lx'])
+  end
   it "means that the signal 123 is provided to wire x" do
     inst = Inst.new('123 -> x')
     expect(inst.result).to eq('x')
@@ -76,6 +82,7 @@ describe Circuit do
     circuit = Circuit.new()
     circuit.step('NOT x -> y')
     circuit.step('123 -> x')
+    circuit.calc()
     expect(circuit.results['y']).to eq(65412)
   end
   it "should take the problem example, and solve" do
@@ -88,6 +95,26 @@ describe Circuit do
     circuit.step('y RSHIFT 2 -> g')
     circuit.step('NOT x -> h')
     circuit.step('NOT y -> i')
+    expect(circuit.results['d']).to eq(72)
+    expect(circuit.results['e']).to eq(507)
+    expect(circuit.results['f']).to eq(492)
+    expect(circuit.results['g']).to eq(114)
+    expect(circuit.results['h']).to eq(65412)
+    expect(circuit.results['i']).to eq(65079)
+    expect(circuit.results['x']).to eq(123)
+    expect(circuit.results['y']).to eq(456)
+  end
+  it "should take the problem example in reverse, and solve" do
+    circuit = Circuit.new()
+    circuit.step('NOT y -> i')
+    circuit.step('NOT x -> h')
+    circuit.step('y RSHIFT 2 -> g')
+    circuit.step('x LSHIFT 2 -> f')
+    circuit.step('x OR y -> e')
+    circuit.step('x AND y -> d')
+    circuit.step('456 -> y')
+    circuit.step('123 -> x')
+    circuit.calc()
     expect(circuit.results['d']).to eq(72)
     expect(circuit.results['e']).to eq(507)
     expect(circuit.results['f']).to eq(492)
