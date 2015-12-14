@@ -33,10 +33,19 @@ describe SantaStr do
     ss = SantaStr.new('"\x27"')
     expect(ss.code_count).to eq(6)
   end
-#  it '"\x27" contains just one - an apostrophe (\'), escaped using hexadecimal notation.' do
-#    ss = SantaStr.new('"\x27"')
-#    expect(ss.mem_count).to eq(1)
-#  end
+  it '"\x27" contains just one - an apostrophe (\'), escaped using hexadecimal notation.' do
+    ss = SantaStr.new('"\x27"')
+    expect(ss.mem_count).to eq(1)
+  end
+
+  it '"\x27\\" is 6 characters of code' do
+    ss = SantaStr.new('"\x27\\\\"')
+    expect(ss.code_count).to eq(8)
+  end
+  it '"\x27\\" contains just one - an apostrophe (\'), escaped using hexadecimal notation.' do
+    ss = SantaStr.new('"\x27\\"')
+    expect(ss.mem_count).to eq(2)
+  end
 end
 
 #describe Day8 do

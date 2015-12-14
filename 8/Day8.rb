@@ -19,9 +19,9 @@ class SantaStr
     /"(?<local>.*)"/ =~ @input
 
     # this matches (\x## or \\ or \" or any char)
-    count = local.scan(/(\\x\d\d)|(\\[\\|\"])|(.)/).length
-#    puts local
-#    count
+    local.scan(/(\\x\d\d)|(\\[\\|\"])|(.)/).length
+
+ #   eval(@input).length
   end
 
 end
@@ -35,18 +35,23 @@ class Day8
 
   def calc()
  
-    code = 0
-    mem = 0
+    code = []
+    mem = []
     @input.each_line do |line|
-      ss = SantaStr.new(line)
-      code += ss.code_count
-      mem += ss.mem_count
+      ss = SantaStr.new(line.chomp)
+      code << ss.code_count
+      mem << ss.mem_count
       
     end
  
-    puts "Total code chars: #{code}"
-    puts "Total in mem chars: #{mem}"
-    puts "code - mem: #{code - mem}"
+    code_count = code.inject{|x,sum| sum + x}
+    mem_count = mem.inject{|x,sum| sum + x}
+#    puts code
+    puts "Total code chars: #{code_count}"
+#    puts mem
+    puts "Total in mem chars: #{mem_count}"
+
+    puts "code - mem: #{code_count - mem_count}"
 
   end
  
