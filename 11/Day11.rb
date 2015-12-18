@@ -55,9 +55,29 @@ class Pw
   end
 
   def to_s
-    str = ''
     @pw.map(&:value).join()
   end
+
+  def valid?()
+    #contains straight of three letters
+    #does not contain i,o,l (taken care of in the letter type)
+    #must contain two different, non-overlapping pairs of letters
+    self.straight? and self.pairs?
+  end
+
+  def straight?
+    @pw.map(&:value).each_cons(3).any? { |a,b,c| [a,a.next,a.next.next] == [a,b,c] }
+  end
+
+  def pairs?
+    # Not sure why this one fails with two like pairs
+    #pairs = /(.)\1.*([^\1])\2/ =~ self.to_s
+    #!!pairs
+    num_pairs = @pw.map(&:value).each_cons(2).to_a.uniq.count {|pair| pair[0] == pair[1] } #Solution from jesus_castello on CodeNewbie chat.. I think I would prefer to map over each_cons and return the letter/pair, and then uniq and count... not sure
+    num_pairs >= 2
+  end
+
+  
 end
 
 
