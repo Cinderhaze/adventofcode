@@ -2,60 +2,14 @@
 
 require 'getoptlong'
 
-class PwLetter
-  #attr_reader 
-
-  def initialize(input = 'a')
-    @valid_letters = [*'a'..'h','j','k', 'm', 'n', *'p'..'z']
-    index = @valid_letters.index(input)
-
-    @valid_letters.rotate!(index)
-
-    puts "value #{@valid_letters[0]}"
-  end
-
-  def to_s
-    "#{@value}"
-  end
-
-  def value()
-    @valid_letters[0]
-  end
-
-  # Returns the 'carry' for addition
-  def increment()
-    @valid_letters.rotate!
-
-    if @valid_letters[0] == 'a'
-     # puts "first char is now a, that means we wrapped around"
-      return true
-    else
-     # puts "no wrap around"
-      return false
-    end
-
-  end
-end
-
-
 class Pw
   attr_reader :pw
   def initialize(input)
-    @input = input
-    @pw=parse_str(input)
-  end
-
-  def parse_str(input)
-    result = []
-    input.each_char do |c|
-      result << PwLetter.new(c)
-    end
-
-    return result 
+    @pw = input.to_s
   end
 
   def to_s
-    @pw.map(&:value).join()
+    @pw
   end
 
   def valid?()
@@ -66,18 +20,33 @@ class Pw
   end
 
   def straight?
-    @pw.map(&:value).each_cons(3).any? { |a,b,c| [a,a.next,a.next.next] == [a,b,c] }
+    @pw.split('').each_cons(3).any? { |a,b,c| [a,a.next,a.next.next] == [a,b,c] }
   end
 
   def pairs?
     # Not sure why this one fails with two like pairs
     #pairs = /(.)\1.*([^\1])\2/ =~ self.to_s
     #!!pairs
-    num_pairs = @pw.map(&:value).each_cons(2).to_a.uniq.count {|pair| pair[0] == pair[1] } #Solution from jesus_castello on CodeNewbie chat.. I think I would prefer to map over each_cons and return the letter/pair, and then uniq and count... not sure
+    num_pairs = @pw.split('').each_cons(2).to_a.uniq.count {|pair| pair[0] == pair[1] } #Solution from jesus_castello on CodeNewbie chat.. I think I would prefer to map over each_cons and return the letter/pair, and then uniq and count... not sure
     num_pairs >= 2
   end
 
+  def valid_letters?
+    #todo look for i,o,l
+  end
+
+  #increment until valid
+  def increment()
+     puts "Inc start: #{self.to_s}"
+     inc_unchecked()
+  end
   
+  #increment, but don't validate
+  def inc_unchecked()
+     puts "Inc unchecked: #{self.to_s}"
+     @pw.next!
+      
+  end
 end
 
 
