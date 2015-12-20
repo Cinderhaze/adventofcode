@@ -16,7 +16,7 @@ class Pw
     #contains straight of three letters
     #does not contain i,o,l (taken care of in the letter type)
     #must contain two different, non-overlapping pairs of letters
-    self.straight? and self.pairs?
+    self.straight? and self.pairs? and self.valid_letters?
   end
 
   def straight?
@@ -32,21 +32,21 @@ class Pw
   end
 
   def valid_letters?
-    #todo look for i,o,l
+    @pw.scan(/[iol]/).empty?
   end
 
   #increment until valid
   def increment()
      puts "Inc start: #{self.to_s}"
-     inc_unchecked()
+     @pw.next! until valid?
+#     count=0
+#     until valid?
+#       @pw.next! 
+#       count += 1
+#       puts "--#{@pw}--" if pw.start_with?('ghiz') or pw.start_with?('ghj')  
+#     end
   end
   
-  #increment, but don't validate
-  def inc_unchecked()
-     puts "Inc unchecked: #{self.to_s}"
-     @pw.next!
-      
-  end
 end
 
 
@@ -60,6 +60,9 @@ class Day11
   def calc()
  
     @input.each_line do |line|
+      pw = Pw.new(line)
+      pw.increment()
+      puts "New password is #{pw.to_s}"
       
     end
  

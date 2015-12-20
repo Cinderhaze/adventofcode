@@ -25,15 +25,35 @@ describe Pw do
     pw = Pw.new('aaaabc')
     expect(pw.pairs?).to eq(false)
   end
-#  it "should increment from abcdefgh to abcdffaa" do
-#    pw = Pw.new('abcdefgh')
-#    pw.increment()
-#    expect(pw.to_s).to eq('abcdffaa')
-#  end
-#  it "should increment from ghijklmn is ghjaabcc, because you eventually skip all the passwords that start with ghi..., since i is not allowed" do
-#    pw = Pw.new('ghijklmn ')
-#    expect(pw.to_s).to eq('ghjaabcc')
-#  end
+  it "should not validate if it contains i" do
+    pw = Pw.new('aaaia')
+    expect(pw.valid_letters?).to eq(false)
+  end
+  it "should not validate if it contains o" do
+    pw = Pw.new('aaaoa')
+    expect(pw.valid_letters?).to eq(false)
+  end
+  it "should not validate if it contains l" do
+    pw = Pw.new('aaala')
+    expect(pw.valid_letters?).to eq(false)
+  end
+  it "should validate if it does not contain i, o, or l" do
+    pw = Pw.new('aaaa')
+    expect(pw.valid_letters?).to eq(true)
+  end
+  it "should not validate ghijklmn, as it contains an i and an l" do
+    pw = Pw.new('ghijklmn')
+    expect(pw.valid_letters?).to eq(false)
+  end
+  it "should increment from abcdefgh to abcdffaa" do
+    pw = Pw.new('abcdefgh')
+    pw.increment()
+    expect(pw.to_s).to eq('abcdffaa')
+  end
+  it "should increment from ghijklmn is ghjaabcc, because you eventually skip all the passwords that start with ghi..., since i is not allowed" do
+    pw = Pw.new('ghijklmn')
+    expect(pw.to_s).to eq('ghjaabcc')
+  end
 end
 
 #describe Day11 do
