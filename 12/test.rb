@@ -29,9 +29,21 @@ describe Counter do
     c = Counter.new('{"a":[-1,1]}')
     expect(c.total).to eq(0)
   end
-  it "should return 0 for [-1,{\"a\":1}]" do
+  it 'should return 0 for [-1,{"a":1}]' do
     c = Counter.new('[-1,{"a":1}]')
     expect(c.total).to eq(0)
+  end
+  it 'should return 0 for {"d":"red","e":[1,2,3,4],"f":5}' do
+    c = Counter.new('{"d":"red","e":[1,2,3,4],"f":5}')
+    expect(c.total).to eq(0)
+  end
+  it 'should return 6 for [1,"red",5]' do
+    c = Counter.new('[1,"red",5]')
+    expect(c.total).to eq(6)
+  end
+  it 'should return 4 for [1,{"c":"red","b":2},3]' do
+    c = Counter.new('[1,{"c":"red","b":2},3]')
+    expect(c.total).to eq(4)
   end
 end
 

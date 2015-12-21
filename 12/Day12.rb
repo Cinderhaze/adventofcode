@@ -9,6 +9,11 @@ module Enumerable
   def flatten_with_path(parent_prefix = nil)
     res = {}
 
+    if (self.is_a? Hash )&& self.any?{|k,v| v == 'red'}
+        puts "skipping for containing 'red'"
+    else
+    
+
     self.each_with_index do |elem, i|
       if elem.is_a?(Array)
         k, v = i, elem.flatten
@@ -19,10 +24,16 @@ module Enumerable
       key = parent_prefix ? "#{parent_prefix}.#{k}" : k # assign key name for result hash
 
       if v.is_a? Enumerable
-        res.merge!(v.flatten_with_path(key)) # recursive call to flatten child elements
+        if v.any?{|k,v| v == 'red'}
+          puts "skipping #{v} for containing 'red'"
+        else
+          res.merge!(v.flatten_with_path(key)) # recursive call to flatten child elements
+        end
       else
         res[key] = v
       end
+    end
+
     end
 
     res
@@ -36,9 +47,9 @@ class Counter
   end
 
   def total
-#    puts @json
-#    puts @json.flatten_with_path.inspect
-#    @json.flatten_with_path.values.each {|x| puts "#{x}:#{x.class}"}
+    puts @json
+    puts @json.flatten_with_path.inspect
+    @json.flatten_with_path.values.each {|x| puts "#{x}:#{x.class}"}
     @json.flatten_with_path.values.select{|x| x.class == Fixnum}.inject(0) {|x, sum| sum + x}
   end
 end
