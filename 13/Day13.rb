@@ -51,7 +51,7 @@ class Graph
   attr_reader :input
   
   def initialize()
-    @lookup = Hash.new 
+    @lookup = Hash.new(0) 
     @locs = Set.new
     @results = Hash.new
   end
@@ -81,15 +81,17 @@ class Graph
 
   def arrangement_happiness(seating)
     total_happiness=0
+    #puts "---#{seating}---"
     seating.each_cycle(3) do |left,center,right|
       #lookup the happiness for each person
       happiness_l = @lookup["#{center}->#{left}"]
       happiness_r = @lookup["#{center}->#{right}"]
-#      puts "From #{center} to #{left} -> #{happiness_l}"
-#      puts "From #{center} to #{right} -> #{happiness_r}"
+      #puts "From #{center} to #{left} -> #{happiness_l}"
+      #puts "From #{center} to #{right} -> #{happiness_r}"
       happiness = happiness_l + happiness_r
       total_happiness += happiness
     end
+    #puts total_happiness
     total_happiness
   end
 
@@ -99,6 +101,13 @@ class Graph
 
   def longest_route
     @results.values.max
+  end
+
+  def add_me
+    #distance default to 0, and add me to loc
+    @locs << 'me'
+    @results = {} # reset to remove previous calculation results
+#    puts @locs.to_a
   end
 
 end
@@ -119,6 +128,13 @@ class Day13
 
     graph.calc()
 
+    puts "shortest path is #{graph.shortest_route}"
+    puts "longest path is #{graph.longest_route}"
+
+    graph.add_me()
+    graph.calc()
+
+    puts "After adding myself"
     puts "shortest path is #{graph.shortest_route}"
     puts "longest path is #{graph.longest_route}"
 
