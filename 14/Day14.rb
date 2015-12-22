@@ -35,27 +35,37 @@ class Reindeer
     step = @duration + @rest
     num_steps = sec / step #integer division
     partial_step_dur = sec % step
-    puts "#{partial_step_dur} < #{@duration} ? #{partial_step_dur < @duration}"
+#    puts "#{partial_step_dur} < #{@duration} ? #{partial_step_dur < @duration}"
     
     partial_step_dist = partial_step_dur < @duration ? partial_step_dur * @speed : @duration * @speed
 
-    dist = num_steps * @speed + partial_step_dist 
-    puts "#{dist} = #{num_steps} * #{@speed} + #{partial_step_dist}" 
+    dist = num_steps * @speed * @duration + partial_step_dist 
+#    puts "#{dist} = #{num_steps} * #{@speed} * #{@duration} + #{partial_step_dist}" 
     dist
   end
 end
 
 class Games
-  attr_reader :input
+  attr_reader :input, :deer, :results
   
   def initialize()
+    @deer = Array.new
+    @results = Hash.new
   end
 
   def step(instruction)
-    
+    @deer << Reindeer.new(instruction)
   end
 
-  def calc()
+  def race(sec)
+    @results = @deer.inject({}) do |memo, deer | 
+      memo[deer.name] = deer.loc(sec) 
+      memo
+    end
+  end
+  
+  def max_dist
+    @results.values.max
   end
 
 end
@@ -69,10 +79,15 @@ class Day14
 
   def calc()
 
+    g = Games.new
     @input.each_line do |line|
       #do something with each line
+      g.step(line)
     end
 
+    sec = 2503
+    g.race(sec)
+    puts "Furthest distance at #{sec} sec is: #{g.max_dist}"
 
   end
  

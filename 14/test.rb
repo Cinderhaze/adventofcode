@@ -61,12 +61,29 @@ describe Reindeer do
     expect(comet.loc(138)).to eq(140+14)
   end
   
-#  it "Dancer should be at 1056 km @1000 sec" do
-#    comet = Reindeer.new(dancer_inst)
-#    expect(comet.loc(1000)).to eq(1056)
-#  end
-#  it "Comet should be at 1120 km @1000 sec" do
-#    comet = Reindeer.new(comet_inst)
-#    expect(comet.loc(1000)).to eq(1120)
-#  end
+  it "Dancer should be at 1056 km @1000 sec" do
+    comet = Reindeer.new(dancer_inst)
+    expect(comet.loc(1000)).to eq(1056)
+  end
+  it "Comet should be at 1120 km @1000 sec" do
+    comet = Reindeer.new(comet_inst)
+    expect(comet.loc(1000)).to eq(1120)
+  end
+end
+
+describe Games do
+  it "should take a set of instructions, calculate results, and pick the winner" do
+  g = Games.new
+  g.step(comet_inst)
+  g.step(dancer_inst)
+
+  g.race(1000)
+  
+  expect(g.results["Comet"]).to eq(1120)
+  expect(g.results["Dancer"]).to eq(1056)
+
+  expect(g.max_dist).to eq(1120)
+
+  
+  end
 end
