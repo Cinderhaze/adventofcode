@@ -14,8 +14,14 @@ class Taxicab
 
   def sequence_to_vectors(seq)
     seq.each_with_object([]) do |step, memo|
-      /(?<orientation>[LR])(?<size>\d*)/ =~ step
+      /(?<orientation_str>[LR])(?<size>\d*)/ =~ step
     
+      orientation = case orientation_str
+      when 'L'
+        @dir.prev
+      when 'R'
+        @dir.next
+      end
       memo << [orientation, size.to_i]
     end
   end
@@ -24,13 +30,7 @@ class Taxicab
     h = Hash.new{ |hash, key| hash[key] = 0 }
     @vectors.each_with_object(h) do |dist, memo|
       
-      orientation = case dist.first
-      when 'L'
-        @dir.prev
-      when 'R'
-        @dir.next
-      end
-      memo[orientation] += dist.last
+      memo[dist.first] += dist.last
     end 
 
     pp h
@@ -38,6 +38,46 @@ class Taxicab
   end
 
   def track_path
+
+    pos = [0,0]
+    visited = @vectors.each_with_object([]) do | vect, visited |
+      orient = vect.first
+      size = vect.last
+
+      case orient
+      when :north
+        size.times  do |_|
+          pos[1] += 1
+          visited << pos.dup
+        end
+      when :south
+        size.times  do |_|
+          pos[1] -= 1
+          visited << pos.dup
+        end
+      when :east
+        size.times  do |_|
+          pos[0] += 1
+          visited << pos.dup
+        end
+      when :west
+        size.times  do |_|
+          pos[0] -= 1
+          visited << pos.dup
+        end
+      end
+    end
+
+    duplicate = nil
+    visited.each_with_index do |pos, idx|
+      if visited[0...idx].include?(pos)
+        duplicate = pos
+        break
+      end
+    end
+
+    duplicate.first.abs + duplicate.last.abs
+    
   end
 
 end
@@ -70,7 +110,7 @@ class Day1
     @input.each_line do |line|
       tc = Taxicab.new(line)
     end
-    tc.distance
+    tc
   end
  
 end
@@ -105,7 +145,8 @@ if __FILE__ == $0
   end
   
   ans = Day1.new(input)
-  dist = ans.calc()
-  puts "Distance traveled is #{dist}"
+  res = ans.calc()
+  puts "Distance traveled is #{res.distance}"
+  puts "Intersection point at #{res.track_path}"
 
 end
