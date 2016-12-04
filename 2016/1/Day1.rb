@@ -14,8 +14,9 @@ class Taxicab
 
   def sequence_to_vectors(seq)
     seq.each_with_object([]) do |step, memo|
-      /([LR])(\d*)/ =~ step
-      memo << [$1, $2.to_i]
+      /(?<orientation>[LR])(?<size>\d*)/ =~ step
+    
+      memo << [orientation, size.to_i]
     end
   end
 
@@ -34,6 +35,9 @@ class Taxicab
 
     pp h
     (h[:north] - h[:south]).abs + (h[:east] - h[:west]).abs
+  end
+
+  def track_path
   end
 
 end
