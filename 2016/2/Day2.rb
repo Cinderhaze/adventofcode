@@ -3,6 +3,7 @@
 require 'getoptlong'
 require 'pp'
 
+#
 class Numberpad
   attr_reader :number
 

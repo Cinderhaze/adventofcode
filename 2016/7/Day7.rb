@@ -1,26 +1,33 @@
 class Ipv7
   attr_reader :input, :pre, :hypernet, :post
 
-  PATTERN = /([^\[]*)\[(.*)\](.*)/
+#  PATTERN = /^([^\[]*)\[(.*)\](.*)$/
+  PATTERN = /(?<outer>(?<inner>[^\[^\]\]]*)(?<hyper>\[[^\[\]]*\])?)/
   
   def initialize(input)
     @input = input
-    PATTERN =~ input
-    @pre, @hypernet, @post = $1, $2, $3
+    @partitoned = partitionInput(input)
+    p @partitioned
+  end
+
+  def partitionInput(input)
+    holderArry = []
+    input.scan(PATTERN){|outer, inner, hyper| holderArry << [inner, hyper]}
+    holderArry
   end
 
   # Returns an array of 4 letter palindromes in the given string
   def abba(str)
     str.chars.each_cons(4)
       .select{|word| word == word.reverse and word[0] != word[1]}
-      .map{|ary| ary.join}
+      .map(&:join)
   end
 
   def supportsTls
     # does not have abba within hypernet
     # AND
     # has abba outside of hypernet
-    abba(@hypernet).empty? and (! abba(@pre).empty? or ! abba(@post).empty?)
+    #abba(@hypernet).empty? and (! abba(@pre).empty? or ! abba(@post).empty?)
   end
 
 end

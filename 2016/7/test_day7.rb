@@ -3,7 +3,15 @@ require 'minitest/autorun'
 require_relative './Day7.rb'
 
 class TestNumberpad < Minitest::Test
+  LONG  = File.read(File.join(File.dirname(__FILE__),"/input.txt"))
   #abba[mnop]qrst supports TLS (abba outside square brackets).
+  def test_ABBA_before_brackets_multiple_hypertext_supports_TLS
+      input = 'abiba[mnop]qrst[asdf]abbaa'
+      ipv7 = Ipv7.new(input)
+      actual_value = ipv7.supportsTls
+      p ipv7.input
+      assert(actual_value)
+  end
   def test_ABBA_before_brackets_supports_TLS
       input = 'abba[mnop]qrst'
       ipv7 = Ipv7.new(input)
@@ -51,6 +59,12 @@ aaaa[qwer]tyui
 ioxxoj[asdfgh]zxcvbn
     EOF
     day7 = Day7.new(input)
+    actual = day7.supports
+    assert_equal(2, actual)
+  end
+
+  def test_part1_read_in_input_file
+    day7 = Day7.new(LONG)
     actual = day7.supports
     assert_equal(2, actual)
 
